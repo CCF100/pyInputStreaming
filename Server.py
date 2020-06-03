@@ -18,30 +18,31 @@ controllerData = ""
 controllerDataDict = {'AxisLx': 0, 'AxisLy': 0, 'AxisRx': 0, 'AxisRy': 0, 'BtnBack': 0, 'BtnStart': 0, 'BtnA': 0, 'BtnB': 0, 'BtnX': 0, 'BtnY': 0, 'BtnThumbL': 0, 'BtnThumbR': 0, 'BtnShoulderL': 0, 'BtnShoulderR': 0, 'Dpad': 0, 'TriggerL': 0, 'TriggerR': 0}
 #Lookup table to convert values from the "inputs" library
 lookup_table = {'ABS_X': 'AxisLx', 'ABS_Y': 'AxisLy', 'ABS_RX': 'AxisRx', 'ABS_RY': 'AxisRy', 'BTN_SELECT': 'BtnBack', 'BTN_START': 'BtnStart', 'BTN_SOUTH': 'BtnA', 'BTN_EAST': 'BtnB', 'BTN_NORTH': 'BtnX', 'BTN_WEST': 'BtnY', 'BTN_THUMBL': 'BtnThumbL', 'BTN_THUMBR': 'BtnThumbR', 'BTN_TL': 'BtnShoulderL', 'BTN_TR': 'BtnShoulderR', 'ABS_Z': 'TriggerL', 'ABS_RZ': 'TriggerR'}
-#print("Waiting for connection...")
 def sendData():
     #Pickle for transmittion
-    encodedControllerData = pickle.Pickler(controllerDataDict)
+    file = conn.makefile(mode='wb')
+    pickler = pickle.Pickler(file)
     #print(encodedControllerData)    
-    pickler.dump(encodedControllerData)
+    pickler.dump(controllerDataDict)    
     file.flush()
 #Create Socket
 conn = socket.create_server((ip, port))
-file = conn.makefile(mode='wb')
-pickler = pickle.Pickler(file)
+#Wait for connections before continuing
+print("Waiting for connection...")
+conn.accept()
 #print(colored('Connected by', 'red'), addr)
 print(controllerDataDict)
 with conn:
     while True:
             events = get_gamepad()
             for event in events:
-            #controllerDataTuple = event.ev_type, event.code, event.state
-            controllerDataTuple = event.code, event.state
-            controllerData = controllerDataTuple
-            #print("controllerData is a", type(controllerData))
-            print(controllerData)
-            print(controllerDataDict)
-            #If event.code is SYN_REPORT, ignore it
+                #controllerDataTuple = event.ev_type, event.code, event.state
+                controllerDataTuple = event.code, event.state
+                controllerData = controllerDataTuple
+                #print("controllerData is a", type(controllerData))
+                print(controllerData)
+                print(controllerDataDict)
+                #If event.code is SYN_REPORT, ignore it
             if event.code == "SYN_REPORT":
                 continue
             if event.code == "BTN_MODE":
