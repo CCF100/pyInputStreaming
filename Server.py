@@ -20,13 +20,14 @@ controllerDataDict = {'AxisLx': 0, 'AxisLy': 0, 'AxisRx': 0, 'AxisRy': 0, 'BtnBa
 lookup_table = {'ABS_X': 'AxisLx', 'ABS_Y': 'AxisLy', 'ABS_RX': 'AxisRx', 'ABS_RY': 'AxisRy', 'BTN_SELECT': 'BtnBack', 'BTN_START': 'BtnStart', 'BTN_SOUTH': 'BtnA', 'BTN_EAST': 'BtnB', 'BTN_NORTH': 'BtnX', 'BTN_WEST': 'BtnY', 'BTN_THUMBL': 'BtnThumbL', 'BTN_THUMBR': 'BtnThumbR', 'BTN_TL': 'BtnShoulderL', 'BTN_TR': 'BtnShoulderR', 'ABS_Z': 'TriggerL', 'ABS_RZ': 'TriggerR'}
 def sendData():
     #Pickle for transmittion
-    file = conn.makefile(mode='wb')
-    pickler = pickle.Pickler(file)
     #print(encodedControllerData)    
     pickler.dump(controllerDataDict)    
     file.flush()
 #Create Socket
 conn = socket.create_server((ip, port))
+#Create pickler :D
+file = conn.makefile(mode='wb')
+pickler = pickle.Pickler(file)
 #Wait for connections before continuing
 print("Waiting for connection...")
 conn.accept()
