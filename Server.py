@@ -6,7 +6,7 @@ import threading
 import socket
 from termcolor import colored
 # Define ip/port to use
-ip = "127.0.0.1"
+ip = "192.168.122.1"
 port = 2222
 # Show available gamepads
 print("Gamepads available:")

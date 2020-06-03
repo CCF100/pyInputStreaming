@@ -2,8 +2,10 @@
 import socket
 import threading
 import re
+import pyxinput
+from time import sleep
 # Define server ip and port
-ip = '127.0.0.1'
+ip = '192.168.122.1'
 port = 2222
 #Define globals
 decodedServerData = ""
@@ -17,17 +19,27 @@ def recvData(ip, port):
         from_server = client.recv(4096)
         #Decode Sever message
         decodedServerData = from_server.decode()
-        
-def printData():
+        print("Raw Data:", decodedServerData)
+def virtualController():
+    MyVirtual = pyxinput.vController()
+    MyRead = pyxinput.rController(1)
+    print(MyRead.gamepad)
+   
     while True:
-        global decodedServerData
-        #print("Raw Data:", decodedServerData)
-        #print('\n'+":O", end="\r", flush=True)
-
+        #global decodedServerData
+        # Init virtual XInput Controller
+        #print(MyRead.gamepad)
+        MyVirtual.set_value('BtnA', 1)
+        print(MyRead.buttons)
+        sleep(3)
+        #print(MyRead.gamepad)
+        MyVirtual.set_value('BtnA', 0)
+        print(MyRead.buttons)
+        sleep(3)
 # Execute all functions as threads
 if __name__ == "__main__":
     #Create Threads
     t1 = threading.Thread(target=recvData, args=(ip, port))
-    t2 = threading.Thread(target=printData, args=())
-t1.start()
+    t2 = threading.Thread(target=virtualController, args=())
+#t1.start()
 t2.start()
