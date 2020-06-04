@@ -12,9 +12,9 @@ MyVirtual = pyxinput.vController()
 # Connect to Server
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((ip, port))
-from_server = client.makefile(mode='rb')
+file = client.makefile(mode='rb')
 #Decode Sever message
-unpickler = pickle.Unpickler(from_server)
+unpickler = pickle.Unpickler(file)
 while True:
     decodedServerData = unpickler.load()
     print("Raw Data:", decodedServerData)
