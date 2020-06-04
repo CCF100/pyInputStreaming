@@ -13,15 +13,17 @@ port = 2222
 # Show available gamepads
 print("Gamepads available:")
 print(devices.gamepads)
+#Define decimal formula
+decimalFormula = "2/(32767 - -32768)*(event.state-32767)+1"
 #Define globals
 controllerData = ""
 #Dictionary of of all possible values
 controllerDataDict = {'AxisLx': 0, 'AxisLy': 0, 'AxisRx': 0, 'AxisRy': 0, 'BtnBack': 0, 'BtnStart': 0, 'BtnA': 0, 'BtnB': 0, 'BtnX': 0, 'BtnY': 0, 'BtnThumbL': 0, 'BtnThumbR': 0, 'BtnShoulderL': 0, 'BtnShoulderR': 0, 'Dpad': 0, 'TriggerL': 0, 'TriggerR': 0}
 #Lookup table to convert values from the "inputs" library
-lookup_table = {'ABS_X': 'AxisLx', 'ABS_Y': 'AxisLy', 'ABS_RX': 'AxisRx', 'ABS_RY': 'AxisRy', 'BTN_SELECT': 'BtnBack', 'BTN_START': 'BtnStart', 'BTN_SOUTH': 'BtnA', 'BTN_EAST': 'BtnB', 'BTN_NORTH': 'BtnX', 'BTN_WEST': 'BtnY', 'BTN_THUMBL': 'BtnThumbL', 'BTN_THUMBR': 'BtnThumbR', 'BTN_TL': 'BtnShoulderL', 'BTN_TR': 'BtnShoulderR', 'ABS_Z': 'TriggerL', 'ABS_RZ': 'TriggerR'}
+lookup_table = {'BTN_SELECT': 'BtnBack', 'BTN_START': 'BtnStart', 'BTN_SOUTH': 'BtnA', 'BTN_EAST': 'BtnB', 'BTN_NORTH': 'BtnX', 'BTN_WEST': 'BtnY', 'BTN_THUMBL': 'BtnThumbL', 'BTN_THUMBR': 'BtnThumbR', 'BTN_TL': 'BtnShoulderL', 'BTN_TR': 'BtnShoulderR'}
 def sendData():
     #Pickle for transmittion
-    pickler.dump(controllerDataDict)
+    pickle.dump(controllerDataDict, file)
     file.flush()
 #Create Socket
 socket = socket.create_server((ip, port))
@@ -45,7 +47,6 @@ while True:
             #controllerDataTuple = event.ev_type, event.code, event.state
             controllerDataTuple = event.code, event.state
             controllerData = controllerDataTuple
-            #print("controllerData is a", type(controllerData))
             print(controllerData)
             print(controllerDataDict)
             #If event.code is SYN_REPORT, ignore it
@@ -73,7 +74,31 @@ while True:
             if event.state == -1:
                 controllerDataDict['Dpad'] = 1  #Up
             sendData()
+        # The joysticks and triggers' values need to be normalized before they are sent
+        #'ABS_X': 'AxisLx', 'ABS_Y': 'AxisLy', 'ABS_RX': 'AxisRx', 'ABS_RY': 'AxisRy'
+        #Left Joystick
+        elif event.code == 'ABS_X': # Left Joystick, left+right
+            controllerDataDict['AxisLx'] = 2/(32767 - -32768)*(event.state-32767)+1
+            sendData()
+        elif event.code == 'ABS_Y': # Left Joystick, up+down
+            controllerDataDict['AxisLy'] = - 2/(32767 - -32768)*(event.state-32767)+1-2
+            sendData()
+        #Right Joystick
+        elif event.code == 'ABS_RX': # Left Joystick, left+right
+            controllerDataDict['AxisRx'] = 2/(32767 - -32768)*(event.state-32767)+1
+            sendData()
+        elif event.code == 'ABS_RY': # Left Joystick, up+down
+            controllerDataDict['AxisRy'] = - 2/(32767 - -32768)*(event.state-32767)+1-2
+            sendData()
+        #Now, for the triggers
+        #'ABS_Z': 'TriggerL', 'ABS_RZ': 'TriggerR'
+        elif event.code == 'ABS_Z':
+            controllerDataDict['TriggerL'] = float(event.state) / 1023
+            sendData()
+        elif event.code == 'ABS_RZ':
+            controllerDataDict['TriggerR'] = float(event.state) / 1023
+            sendData()
         else:
-            # Add values to controllerDataDict
+            # Add button values to controllerDataDict
             controllerDataDict[lookup_table[str(event.code)]] = event.state
             sendData()

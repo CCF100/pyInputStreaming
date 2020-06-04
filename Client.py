@@ -10,15 +10,16 @@ port = 2222
 # Create virtual controller
 MyVirtual = pyxinput.vController()
 # Connect to Server
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((ip, port))
-file = client.makefile(mode='rb')
+conn = socket.create_connection((ip, port))
+from_server = conn.makefile(mode='rb')
 #Decode Sever message
-unpickler = pickle.Unpickler(file)
+#unpickler = pickle.Unpickler(file)
 while True:
-    decodedServerData = unpickler.load()
-    print("Raw Data:", decodedServerData)
-    # pyxinput will only accept values one at a time, so we need to apply the itme in the dictionary one by one
+    #decodedServerData = unpickler.load()
+    decodedServerData = pickle.load(from_server)
+    #print("Raw Data:", from_server)
+    #print("Unpicked Data: ", decodedServerData)
+    # pyxinput will only accept values one at a time, so we need to apply the items in the dictionary one by one
     for event, state in decodedServerData.items():
         MyVirtual.set_value(event, state)
-        print('\''+event+'\''+',', state)
+        #print('\''+event+'\''+',', state)
