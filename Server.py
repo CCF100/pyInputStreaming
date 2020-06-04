@@ -36,7 +36,7 @@ pickler = pickle.Pickler(file)
 file.flush()
 print(connection)
 print(type(connection))
-#Immutiple socket? I don't think so...
+#Immutible socket? I don't think so...
 iwantThatRaddr = re.findall(r"'(?<=raddr=\(')\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'", str(connection))
 print(iwantThatRaddr)
 print(colored('Connected by', 'red'), iwantThatRaddr[0])
