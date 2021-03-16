@@ -37,9 +37,9 @@ file.flush()
 print(connection)
 print(type(connection))
 #Immutible socket? I don't think so...
-iwantThatRaddr = re.findall(r"'(?<=raddr=\(')\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'", str(connection))
-print(iwantThatRaddr)
-print(colored('Connected by', 'red'), iwantThatRaddr[0])
+#iwantThatRaddr = re.findall(r"'(?<=raddr=\(')\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'", str(connection))
+#print(iwantThatRaddr)
+print(colored('Connected by', 'red'), connection.getpeername())
 print(controllerDataDict)
 while True:
         events = get_gamepad()
